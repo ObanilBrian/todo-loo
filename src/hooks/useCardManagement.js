@@ -127,7 +127,7 @@ export const useCardManagement = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/tasks", {
+      const response = await fetch("/api/task", {
         method: "PUT",
         credentials: "include",
         headers: {

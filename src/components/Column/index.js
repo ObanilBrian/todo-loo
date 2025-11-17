@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "@/styles/dashboard.module.css";
 import Card from "@/components/Card";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
 export default function Column({
   column,
@@ -15,7 +16,15 @@ export default function Column({
   onConfirmDelete,
   onOpenModal,
   onOpenEditModal,
+  pagination,
+  onLoadMore,
 }) {
+  const scrollTarget = useInfiniteScroll(
+    column.key,
+    onLoadMore,
+    pagination?.[column.key]?.hasNextPage || false
+  );
+
   return (
     <div className="col-lg-3 col-md-6">
       <div
@@ -36,6 +45,7 @@ export default function Column({
         </div>
         <div
           className={`card-body ${styles.columnBody}`}
+          style={{ overflowY: "auto", maxHeight: "calc(100vh - 200px)" }}
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={(e) => onDrop(e, column.key)}
@@ -45,17 +55,28 @@ export default function Column({
               <p>No tasks yet</p>
             </div>
           ) : (
-            <Card
-              column={column}
-              tasks={tasks}
-              onDragStart={onDragStart}
-              onTaskDragOver={onTaskDragOver}
-              onTaskDragLeave={onTaskDragLeave}
-              dropIndicator={dropIndicator}
-              onDrop={onDrop}
-              onConfirmDelete={onConfirmDelete}
-              onOpenEditModal={onOpenEditModal}
-            />
+            <>
+              <Card
+                column={column}
+                tasks={tasks}
+                onDragStart={onDragStart}
+                onTaskDragOver={onTaskDragOver}
+                onTaskDragLeave={onTaskDragLeave}
+                dropIndicator={dropIndicator}
+                onDrop={onDrop}
+                onConfirmDelete={onConfirmDelete}
+                onOpenEditModal={onOpenEditModal}
+              />
+              {pagination?.[column.key]?.hasNextPage && (
+                <div
+                  ref={scrollTarget}
+                  className="text-center text-muted py-3"
+                  style={{ fontSize: "0.875rem" }}
+                >
+                  Loading more tasks...
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

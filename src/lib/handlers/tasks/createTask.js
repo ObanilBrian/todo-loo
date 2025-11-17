@@ -14,7 +14,7 @@ export async function createTask(userId, { title, description, column }) {
     const lastTask = await Task.findOne({ userId, column }).sort({
       position: -1,
     });
-    const position = lastTask ? lastTask.position + 1 : 0;
+    const position = lastTask ? lastTask.position + 10 : 0;
 
     const task = await Task.create({
       userId,

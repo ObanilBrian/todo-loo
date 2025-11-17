@@ -45,6 +45,11 @@ export const useDragDrop = (tasks, setTasks) => {
     const targetIndex =
       dropIndicator?.position ?? tasks[targetColumnKey].length;
 
+    // Clear drop indicator immediately
+    setDropIndicator(null);
+    setDraggedTask(null);
+    setSourceColumn(null);
+
     // Update local state optimistically
     setTasks((prevTasks) => {
       const newTasks = { ...prevTasks };
@@ -99,10 +104,6 @@ export const useDragDrop = (tasks, setTasks) => {
     } finally {
       setIsMoving(false);
     }
-
-    setDraggedTask(null);
-    setSourceColumn(null);
-    setDropIndicator(null);
   };
 
   return {

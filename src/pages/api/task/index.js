@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     let result;
 
     if (req.method === "GET") {
-      result = await getTasks(userId);
+      result = await getTasks(userId, req.query);
     } else if (req.method === "POST") {
       result = await createTask(userId, req.body);
     } else if (req.method === "PUT") {

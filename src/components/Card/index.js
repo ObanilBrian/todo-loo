@@ -17,6 +17,21 @@ export default function Card({
     onDrop(e, column.key);
   };
 
+  const handleDragStart = (e, task) => {
+    onDragStart(e, task, column.key);
+    // Add a class to indicate dragging
+    e.target
+      .closest(`.${cardStyles.taskCard}`)
+      .classList.add(cardStyles.dragging);
+  };
+
+  const handleDragEnd = (e) => {
+    // Remove the dragging class
+    e.target
+      .closest(`.${cardStyles.taskCard}`)
+      .classList.remove(cardStyles.dragging);
+  };
+
   return (
     <div className={cardStyles.tasksContainer}>
       {tasks[column.key].map((task, index) => (
@@ -28,7 +43,8 @@ export default function Card({
           <div
             className={`card mb-2 ${cardStyles.taskCard}`}
             draggable
-            onDragStart={(e) => onDragStart(e, task, column.key)}
+            onDragStart={(e) => handleDragStart(e, task)}
+            onDragEnd={handleDragEnd}
             onDragOver={(e) => onTaskDragOver(e, task._id, column.key, index)}
             onDragLeave={onTaskDragLeave}
             onDrop={(e) => handleTaskDrop(e, index)}

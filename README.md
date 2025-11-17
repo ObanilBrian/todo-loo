@@ -107,24 +107,24 @@ All endpoints require JWT authentication (cookie or Authorization header).
 
 ### Tasks CRUD
 
-**GET /api/tasks**
+**GET /api/task**
 
 - Fetch all user tasks, sorted by column and position
 - Response: `{ message, tasks: Task[] }`
 
-**POST /api/tasks**
+**POST /api/task**
 
 - Create new task
 - Body: `{ title: string (required), description?: string, column?: "backlog"|"todo"|"inProgress"|"done" }`
 - Response: `{ message, task: Task }`
 
-**PUT /api/tasks**
+**PUT /api/task**
 
 - Update task or move to different column
 - Body: `{ taskId: string (required), title: string (required), description?: string, column?: string, position?: number }`
 - Response: `{ message, task: Task }`
 
-**DELETE /api/tasks?taskId=<id>**
+**DELETE /api/task?taskId=<id>**
 
 - Delete task
 - Response: `{ message }`
