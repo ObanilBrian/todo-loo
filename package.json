@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.8",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.0",
     "next": "16.0.3",
     "react": "19.2.0",
     "react-dom": "19.2.0"

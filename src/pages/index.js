@@ -1,63 +1,96 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useAuth } from "@/hooks/useAuth";
+import styles from "@/styles/auth.module.css";
 
-export default function Home() {
+export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
+  const { login, register, loading, error, addError } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempted with:", { username, password });
-    // You can add your login logic here
-    alert(`Logged in as: ${username}`);
-    // Reset form
-    setUsername("");
-    setPassword("");
+
+    try {
+      if (isLogin) {
+        await login(username, password);
+      } else {
+        await register(username, password);
+      }
+    } catch (err) {
+      // Error is handled by the hook
+    }
   };
 
   return (
-    <div
-      className="container d-flex justify-content-center align-items-center"
-      style={{ minHeight: "100vh" }}
-    >
-      <div className="card shadow-lg" style={{ width: "400px" }}>
-        <div className="card-body p-5">
-          <h1 className="text-center mb-4">ToDo Loo!📋</h1>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="username" className="form-label">
-                Username:
-              </label>
-              <input
-                type="text"
-                id="username"
-                className="form-control"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
+    <div className={styles.authContainer}>
+      <div className={styles.authCard}>
+        <h1 className="mb-4">
+          {isLogin ? "Login to ToDo Loo!" : "Register for ToDo Loo!"}
+        </h1>
 
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">
-                Password:
-              </label>
-              <input
-                type="password"
-                id="password"
-                className="form-control"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
 
-            <button type="submit" className="btn btn-primary w-100 mb-3">
-              Log In
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">
+              Username
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              minLength="3"
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">
+              Password
+            </label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              minLength="6"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary w-100 mb-3"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : isLogin ? "Login" : "Register"}
+          </button>
+        </form>
+
+        <div className="text-center">
+          <p className="mb-0">
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <button
+              className="btn btn-link p-0"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                addError(null);
+              }}
+            >
+              {isLogin ? "Register here" : "Login here"}
             </button>
-            <div className="text-center">
-              Don&apos;t have an account? <a href="#">Register here.</a>
-            </div>
-          </form>
+          </p>
         </div>
       </div>
     </div>
