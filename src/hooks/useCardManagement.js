@@ -6,6 +6,7 @@ export const useCardManagement = () => {
   const [formData, setFormData] = useState({ title: "", description: "" });
   const [nextId, setNextId] = useState(4);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [editMode, setEditMode] = useState(null); // { cardId, columnKey }
 
   const handleOpenModal = (columnKey) => {
     setSelectedColumn(columnKey);
@@ -58,6 +59,38 @@ export const useCardManagement = () => {
     setDeleteConfirm(null);
   };
 
+  const handleOpenEditModal = (cardId, columnKey, task) => {
+    setEditMode({ cardId, columnKey });
+    setFormData({ title: task.title, description: task.description });
+    setShowModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditMode(null);
+    setShowModal(false);
+    setFormData({ title: "", description: "" });
+  };
+
+  const handleEditCard = (e, setTasks) => {
+    e.preventDefault();
+    if (!formData.title.trim() || !editMode) return;
+
+    setTasks((prev) => ({
+      ...prev,
+      [editMode.columnKey]: prev[editMode.columnKey].map((task) =>
+        task.id === editMode.cardId
+          ? {
+              ...task,
+              title: formData.title,
+              description: formData.description,
+            }
+          : task
+      ),
+    }));
+
+    handleCloseEditModal();
+  };
+
   return {
     showModal,
     setShowModal,
@@ -69,10 +102,15 @@ export const useCardManagement = () => {
     setNextId,
     deleteConfirm,
     setDeleteConfirm,
+    editMode,
+    setEditMode,
     handleOpenModal,
     handleCloseModal,
+    handleOpenEditModal,
+    handleCloseEditModal,
     handleFormChange,
     handleAddCard,
+    handleEditCard,
     handleDeleteCard,
     handleConfirmDelete,
     handleCancelDelete,

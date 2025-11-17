@@ -117,6 +117,7 @@ export default function Dashboard() {
             dropIndicator={dragDrop.dropIndicator}
             onConfirmDelete={cardManagement.handleConfirmDelete}
             onOpenModal={cardManagement.handleOpenModal}
+            onOpenEditModal={cardManagement.handleOpenEditModal}
           />
         ))}
       </div>
@@ -126,10 +127,19 @@ export default function Dashboard() {
         selectedColumn={cardManagement.selectedColumn}
         formData={cardManagement.formData}
         columns={columns}
-        onClose={cardManagement.handleCloseModal}
+        editMode={cardManagement.editMode}
+        onClose={
+          cardManagement.editMode
+            ? cardManagement.handleCloseEditModal
+            : cardManagement.handleCloseModal
+        }
         onFormChange={cardManagement.handleFormChange}
         onSelectColumn={cardManagement.setSelectedColumn}
-        onSubmit={(e) => cardManagement.handleAddCard(e, setTasks)}
+        onSubmit={(e) =>
+          cardManagement.editMode
+            ? cardManagement.handleEditCard(e, setTasks)
+            : cardManagement.handleAddCard(e, setTasks)
+        }
       />
 
       <DeleteConfirmModal

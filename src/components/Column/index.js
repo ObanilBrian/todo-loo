@@ -14,6 +14,7 @@ export default function Column({
   dropIndicator,
   onConfirmDelete,
   onOpenModal,
+  onOpenEditModal,
 }) {
   return (
     <div className="col-lg-3 col-md-6">
@@ -53,6 +54,7 @@ export default function Column({
               dropIndicator={dropIndicator}
               onDrop={onDrop}
               onConfirmDelete={onConfirmDelete}
+              onOpenEditModal={onOpenEditModal}
             />
           )}
         </div>

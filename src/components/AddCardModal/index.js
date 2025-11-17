@@ -6,6 +6,7 @@ export default function AddCardModal({
   selectedColumn,
   formData,
   columns,
+  editMode,
   onClose,
   onFormChange,
   onSelectColumn,
@@ -13,11 +14,15 @@ export default function AddCardModal({
 }) {
   if (!showModal) return null;
 
+  const isEditMode = !!editMode;
+  const title = isEditMode ? "Edit Card" : "Add New Card";
+  const buttonText = isEditMode ? "Save Changes" : "Add Card";
+
   return (
     <div className={styles.modalBackdrop} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
-          <h5>Add New Card</h5>
+          <h5>{title}</h5>
           <button className={styles.closeBtn} onClick={onClose}>
             ×
           </button>
@@ -53,23 +58,25 @@ export default function AddCardModal({
                 rows="3"
               />
             </div>
-            <div className="mb-3">
-              <label htmlFor="column" className="form-label">
-                Column
-              </label>
-              <select
-                className="form-select"
-                id="column"
-                value={selectedColumn}
-                onChange={(e) => onSelectColumn(e.target.value)}
-              >
-                {columns.map((col) => (
-                  <option key={col.key} value={col.key}>
-                    {col.title}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {!isEditMode && (
+              <div className="mb-3">
+                <label htmlFor="column" className="form-label">
+                  Column
+                </label>
+                <select
+                  className="form-select"
+                  id="column"
+                  value={selectedColumn}
+                  onChange={(e) => onSelectColumn(e.target.value)}
+                >
+                  {columns.map((col) => (
+                    <option key={col.key} value={col.key}>
+                      {col.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
           <div className={styles.modalFooter}>
             <button
@@ -80,7 +87,7 @@ export default function AddCardModal({
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
-              Add Card
+              {buttonText}
             </button>
           </div>
         </form>
