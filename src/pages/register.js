@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function Home() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,7 +22,11 @@ export default function Home() {
     >
       <div className="card shadow-lg" style={{ width: "400px" }}>
         <div className="card-body p-5">
-          <h1 className="text-center mb-4">ToDo Loo!📋</h1>
+          <div className="mb-4">
+            <strong>
+              Enter your information to proceed with your registration:
+            </strong>
+          </div>
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="username" className="form-label">
@@ -51,11 +56,25 @@ export default function Home() {
               />
             </div>
 
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Confirm Password:
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                className="form-control"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
             <button type="submit" className="btn btn-primary w-100 mb-3">
-              Log In
+              Register
             </button>
             <div className="text-center">
-              Don&apos;t have an account? <a href="#">Register here.</a>
+              Already have an account? <a href="#">Login here.</a>
             </div>
           </form>
         </div>
