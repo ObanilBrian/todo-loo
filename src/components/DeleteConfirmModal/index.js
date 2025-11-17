@@ -35,7 +35,7 @@ export default function DeleteConfirmModal({
             type="button"
             className="btn btn-danger"
             onClick={() =>
-              onConfirm(deleteConfirm.cardId, deleteConfirm.columnKey)
+              onConfirm(deleteConfirm.taskId, deleteConfirm.columnKey)
             }
           >
             Delete

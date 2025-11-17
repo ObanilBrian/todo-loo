@@ -20,7 +20,7 @@ export default function Card({
   return (
     <div className={cardStyles.tasksContainer}>
       {tasks[column.key].map((task, index) => (
-        <div key={task.id}>
+        <div key={task._id}>
           {dropIndicator?.columnKey === column.key &&
             dropIndicator?.position === index && (
               <div className={cardStyles.dropIndicator} />
@@ -29,7 +29,7 @@ export default function Card({
             className={`card mb-2 ${cardStyles.taskCard}`}
             draggable
             onDragStart={(e) => onDragStart(e, task, column.key)}
-            onDragOver={(e) => onTaskDragOver(e, task.id, column.key, index)}
+            onDragOver={(e) => onTaskDragOver(e, task._id, column.key, index)}
             onDragLeave={onTaskDragLeave}
             onDrop={(e) => handleTaskDrop(e, index)}
           >
@@ -46,7 +46,7 @@ export default function Card({
                     className={`${cardStyles.editBtn} me-1`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onOpenEditModal(task.id, column.key, task);
+                      onOpenEditModal(task._id, column.key, task);
                     }}
                     title="Edit card"
                   >
@@ -64,7 +64,7 @@ export default function Card({
                     className={cardStyles.deleteBtn}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onConfirmDelete(task.id, column.key);
+                      onConfirmDelete(task._id, column.key);
                     }}
                     title="Delete card"
                   >

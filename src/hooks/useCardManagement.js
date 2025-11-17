@@ -4,9 +4,10 @@ export const useCardManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState("backlog");
   const [formData, setFormData] = useState({ title: "", description: "" });
-  const [nextId, setNextId] = useState(4);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [editMode, setEditMode] = useState(null); // { cardId, columnKey }
+  const [editMode, setEditMode] = useState(null); // { taskId, columnKey }
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleOpenModal = (columnKey) => {
     setSelectedColumn(columnKey);
@@ -24,43 +25,90 @@ export const useCardManagement = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddCard = (e, setTasks) => {
+  const handleAddCard = async (e, setTasks) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
 
-    const newCard = {
-      id: nextId,
-      title: formData.title,
-      description: formData.description,
-    };
+    setIsLoading(true);
+    setError(null);
 
-    setTasks((prev) => ({
-      ...prev,
-      [selectedColumn]: [...prev[selectedColumn], newCard],
-    }));
+    try {
+      const response = await fetch("/api/task", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          column: selectedColumn,
+        }),
+      });
 
-    setNextId(nextId + 1);
-    handleCloseModal();
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Failed to create task");
+        return;
+      }
+
+      // Update local state with the new task
+      setTasks((prev) => ({
+        ...prev,
+        [selectedColumn]: [...prev[selectedColumn], data.task],
+      }));
+
+      handleCloseModal();
+    } catch (err) {
+      setError("Error creating task: " + err.message);
+      console.error("Error creating task:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteCard = (cardId, columnKey, setTasks) => {
-    setTasks((prev) => ({
-      ...prev,
-      [columnKey]: prev[columnKey].filter((task) => task.id !== cardId),
-    }));
-    setDeleteConfirm(null);
+  const handleDeleteCard = async (taskId, columnKey, setTasks) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/task?taskId=${taskId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message || "Failed to delete task");
+        return;
+      }
+
+      // Update local state
+      setTasks((prev) => ({
+        ...prev,
+        [columnKey]: prev[columnKey].filter((task) => task._id !== taskId),
+      }));
+
+      setDeleteConfirm(null);
+    } catch (err) {
+      setError("Error deleting task: " + err.message);
+      console.error("Error deleting task:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleConfirmDelete = (cardId, columnKey) => {
-    setDeleteConfirm({ cardId, columnKey });
+  const handleConfirmDelete = (taskId, columnKey) => {
+    setDeleteConfirm({ taskId, columnKey });
   };
 
   const handleCancelDelete = () => {
     setDeleteConfirm(null);
   };
 
-  const handleOpenEditModal = (cardId, columnKey, task) => {
-    setEditMode({ cardId, columnKey });
+  const handleOpenEditModal = (taskId, columnKey, task) => {
+    setEditMode({ taskId, columnKey });
     setFormData({ title: task.title, description: task.description });
     setShowModal(true);
   };
@@ -71,24 +119,50 @@ export const useCardManagement = () => {
     setFormData({ title: "", description: "" });
   };
 
-  const handleEditCard = (e, setTasks) => {
+  const handleEditCard = async (e, setTasks) => {
     e.preventDefault();
     if (!formData.title.trim() || !editMode) return;
 
-    setTasks((prev) => ({
-      ...prev,
-      [editMode.columnKey]: prev[editMode.columnKey].map((task) =>
-        task.id === editMode.cardId
-          ? {
-              ...task,
-              title: formData.title,
-              description: formData.description,
-            }
-          : task
-      ),
-    }));
+    setIsLoading(true);
+    setError(null);
 
-    handleCloseEditModal();
+    try {
+      const response = await fetch("/api/tasks", {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          taskId: editMode.taskId,
+          title: formData.title,
+          description: formData.description,
+          column: editMode.columnKey,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Failed to update task");
+        return;
+      }
+
+      // Update local state
+      setTasks((prev) => ({
+        ...prev,
+        [editMode.columnKey]: prev[editMode.columnKey].map((task) =>
+          task._id === editMode.taskId ? data.task : task
+        ),
+      }));
+
+      handleCloseEditModal();
+    } catch (err) {
+      setError("Error updating task: " + err.message);
+      console.error("Error updating task:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
@@ -98,12 +172,13 @@ export const useCardManagement = () => {
     setSelectedColumn,
     formData,
     setFormData,
-    nextId,
-    setNextId,
     deleteConfirm,
     setDeleteConfirm,
     editMode,
     setEditMode,
+    isLoading,
+    error,
+    setError,
     handleOpenModal,
     handleCloseModal,
     handleOpenEditModal,
