@@ -106,8 +106,9 @@ export default function Dashboard() {
           <button
             className="btn btn-primary mx-2"
             onClick={() => cardManagement.handleOpenModal("backlog")}
+            title="Add a new card"
           >
-            + Add Card
+            + <span className="d-none d-lg-inline-block">Add Card</span>
           </button>
           <button
             className="btn btn-outline-secondary"
