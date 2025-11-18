@@ -171,11 +171,30 @@ export const useBatchDragDrop = (tasks, setTasks) => {
     e.preventDefault();
     if (!draggedTask || !sourceColumn) return;
 
-    // First, get the tasks in target column without the dragged task
-    // AND normalize their positions in case they're in Decimal128 format
-    const tasksInTargetColumn = tasks[targetColumnKey]
+    // Get the tasks in target column, accounting for pending updates
+    let tasksInTargetColumn = tasks[targetColumnKey]
       .filter((task) => task._id !== draggedTask._id)
       .map((task) => normalizeTaskPosition(task));
+
+    // Apply pending position updates from the queue to get the true current positions
+    const pendingUpdatesForColumn = Object.values(
+      updateQueueRef.current
+    ).filter((update) => update.column === targetColumnKey);
+
+    // Create a map of taskId -> pending position
+    const pendingPositions = {};
+    pendingUpdatesForColumn.forEach((update) => {
+      pendingPositions[update.taskId] = update.position;
+    });
+
+    // Update positions of tasks that have pending updates
+    tasksInTargetColumn = tasksInTargetColumn.map((task) => ({
+      ...task,
+      position: pendingPositions[task._id] ?? task.position,
+    }));
+
+    // Re-sort by position to get correct visual order
+    tasksInTargetColumn.sort((a, b) => a.position - b.position);
 
     // Use dropIndicator position if available, otherwise append to end
     const targetPosition =
@@ -192,6 +211,14 @@ export const useBatchDragDrop = (tasks, setTasks) => {
         // Position should be less than the first task
         const firstTaskPos = tasksInTargetColumn[0].position;
         newPosition = firstTaskPos / 2;
+
+        // Ensure position is unique (not already used)
+        const existingPositions = new Set(
+          tasksInTargetColumn.map((t) => t.position)
+        );
+        while (existingPositions.has(newPosition)) {
+          newPosition = newPosition / 2; // Keep dividing until we get a unique position
+        }
       }
     } else if (targetPosition >= tasksInTargetColumn.length) {
       // Inserting at the end
@@ -201,12 +228,41 @@ export const useBatchDragDrop = (tasks, setTasks) => {
         const lastTaskPos =
           tasksInTargetColumn[tasksInTargetColumn.length - 1].position;
         newPosition = lastTaskPos + 10;
+
+        // Ensure position is unique (not already used)
+        const existingPositions = new Set(
+          tasksInTargetColumn.map((t) => t.position)
+        );
+        while (existingPositions.has(newPosition)) {
+          newPosition = newPosition + 10; // Keep incrementing until we get a unique position
+        }
       }
     } else {
       // Inserting between two tasks
       const beforeTask = tasksInTargetColumn[targetPosition - 1];
       const afterTask = tasksInTargetColumn[targetPosition];
-      newPosition = (beforeTask.position + afterTask.position) / 2;
+      const beforePos = beforeTask?.position || 0;
+      const afterPos = afterTask?.position || 10;
+
+      newPosition = (beforePos + afterPos) / 2;
+
+      // Ensure position is unique (not already used)
+      const existingPositions = new Set(
+        tasksInTargetColumn.map((t) => t.position)
+      );
+      let attempts = 0;
+      const maxAttempts = 100;
+
+      while (existingPositions.has(newPosition) && attempts < maxAttempts) {
+        // If the midpoint is taken, try a slightly offset value
+        newPosition = newPosition + (Math.random() * 0.001 - 0.0005);
+        attempts++;
+      }
+
+      // Fallback if we somehow can't find a unique position (shouldn't happen)
+      if (existingPositions.has(newPosition)) {
+        newPosition = afterPos + Math.random() * 10;
+      }
     }
 
     // Clear drop indicator immediately
