@@ -10,12 +10,39 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePagination } from "@/hooks/usePagination";
 import cardStyles from "@/styles/card.module.css";
 import Head from "next/head";
+import { verifyToken } from "@/lib/jwt";
+
+export async function getServerSideProps(context) {
+  const token = context.req.cookies.token;
+  
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const decoded = verifyToken(token);
+
+  if (!decoded) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
 
 export default function Dashboard() {
   const router = useRouter();
-  const { logout, checkAuth } = useAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { logout } = useAuth();
 
   const {
     tasks,
@@ -52,25 +79,11 @@ export default function Dashboard() {
     [loadNextPage]
   );
 
-  // Authentication guard and fetch initial tasks
+  // Fetch initial tasks
   useEffect(() => {
-    const init = async () => {
-      const isAuth = await checkAuth();
-      if (!isAuth) {
-        router.push("/");
-        return;
-      }
-      setIsAuthenticated(true);
-
-      // Reset pagination and fetch initial tasks
-      resetPagination();
-      await fetchInitialTasks();
-
-      setIsLoading(false);
-    };
-
-    init();
-  }, [router, resetPagination, fetchInitialTasks, checkAuth]);
+    resetPagination();
+    fetchInitialTasks();
+  }, [resetPagination, fetchInitialTasks]);
 
   // Cleanup batch updates on component unmount
   useEffect(() => {
@@ -79,24 +92,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Show loading state while checking authentication
-  if (isLoading) {
-    return (
-      <div
-        className="container-fluid p-4 d-flex justify-content-center align-items-center"
-        style={{ minHeight: "100vh" }}
-      >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
 
-  // If not authenticated, show nothing
-  if (!isAuthenticated) {
-    return <div></div>;
-  }
 
   return (
     <div className="container-fluid p-4">

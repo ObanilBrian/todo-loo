@@ -331,6 +331,7 @@ export const useBatchDragDrop = (tasks, setTasks) => {
       fetch("/api/task/batch", {
         method: "PATCH",
         credentials: "include",
+        keepalive: true,
         headers: {
           "Content-Type": "application/json",
         },
