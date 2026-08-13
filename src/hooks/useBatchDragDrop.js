@@ -246,14 +246,6 @@ export const useBatchDragDrop = (tasks, setTasks) => {
       return newTasks;
     });
 
-    // Add to update queue with calculated position
-    updateQueueRef.current[draggedTask._id] = {
-      taskId: draggedTask._id,
-      title: draggedTask.title,
-      description: draggedTask.description,
-      column: targetColumnKey,
-      position: newPosition,
-    };
 
     // Update pending count state
     setPendingUpdates(Object.keys(updateQueueRef.current).length);
