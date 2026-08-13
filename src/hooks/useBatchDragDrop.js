@@ -200,70 +200,26 @@ export const useBatchDragDrop = (tasks, setTasks) => {
     const targetPosition =
       dropIndicator?.position ?? tasksInTargetColumn.length;
 
-    // Calculate intelligent position like updateTask does
-    let newPosition = 0;
+    // Insert the dragged task at the target position
+    tasksInTargetColumn.splice(targetPosition, 0, draggedTask);
 
-    if (targetPosition === 0) {
-      // Inserting at the beginning
-      if (tasksInTargetColumn.length === 0) {
-        newPosition = 0;
-      } else {
-        // Position should be less than the first task
-        const firstTaskPos = tasksInTargetColumn[0].position;
-        newPosition = firstTaskPos / 2;
-
-        // Ensure position is unique (not already used)
-        const existingPositions = new Set(
-          tasksInTargetColumn.map((t) => t.position)
-        );
-        while (existingPositions.has(newPosition)) {
-          newPosition = newPosition / 2; // Keep dividing until we get a unique position
-        }
-      }
-    } else if (targetPosition >= tasksInTargetColumn.length) {
-      // Inserting at the end
-      if (tasksInTargetColumn.length === 0) {
-        newPosition = 0;
-      } else {
-        const lastTaskPos =
-          tasksInTargetColumn[tasksInTargetColumn.length - 1].position;
-        newPosition = lastTaskPos + 10;
-
-        // Ensure position is unique (not already used)
-        const existingPositions = new Set(
-          tasksInTargetColumn.map((t) => t.position)
-        );
-        while (existingPositions.has(newPosition)) {
-          newPosition = newPosition + 10; // Keep incrementing until we get a unique position
-        }
-      }
-    } else {
-      // Inserting between two tasks
-      const beforeTask = tasksInTargetColumn[targetPosition - 1];
-      const afterTask = tasksInTargetColumn[targetPosition];
-      const beforePos = beforeTask?.position || 0;
-      const afterPos = afterTask?.position || 10;
-
-      newPosition = (beforePos + afterPos) / 2;
-
-      // Ensure position is unique (not already used)
-      const existingPositions = new Set(
-        tasksInTargetColumn.map((t) => t.position)
-      );
-      let attempts = 0;
-      const maxAttempts = 100;
-
-      while (existingPositions.has(newPosition) && attempts < maxAttempts) {
-        // If the midpoint is taken, try a slightly offset value
-        newPosition = newPosition + (Math.random() * 0.001 - 0.0005);
-        attempts++;
-      }
-
-      // Fallback if we somehow can't find a unique position (shouldn't happen)
-      if (existingPositions.has(newPosition)) {
-        newPosition = afterPos + Math.random() * 10;
-      }
-    }
+    // Integer re-indexing approach: re-index all tasks in the column
+    // to guarantee consistent integer gaps and prevent precision loss
+    tasksInTargetColumn.forEach((task, index) => {
+      const newPos = (index + 1) * 1024;
+      
+      // Update local task position
+      task.position = newPos;
+      
+      // Queue update for any task whose position changed
+      updateQueueRef.current[task._id] = {
+        taskId: task._id,
+        title: task.title,
+        description: task.description,
+        column: targetColumnKey,
+        position: newPos,
+      };
+    });
 
     // Clear drop indicator immediately
     setDropIndicator(null);
@@ -272,28 +228,20 @@ export const useBatchDragDrop = (tasks, setTasks) => {
     setTasks((prevTasks) => {
       const newTasks = { ...prevTasks };
 
-      // Remove from source column
-      const sourceArray = newTasks[sourceColumn];
-      const taskIndex = sourceArray.findIndex(
-        (task) => task._id === draggedTask._id
-      );
-
-      if (taskIndex === -1) {
-        setDraggedTask(null);
-        setSourceColumn(null);
-        return prevTasks;
+      // Remove from source column if it's a different column
+      if (sourceColumn !== targetColumnKey) {
+        const sourceArray = [...newTasks[sourceColumn]];
+        const taskIndex = sourceArray.findIndex(
+          (task) => task._id === draggedTask._id
+        );
+        if (taskIndex !== -1) {
+          sourceArray.splice(taskIndex, 1);
+          newTasks[sourceColumn] = sourceArray;
+        }
       }
 
-      sourceArray.splice(taskIndex, 1);
-
-      // Adjust target position if dropping in the same column
-      let adjustedPosition = targetPosition;
-      if (sourceColumn === targetColumnKey && taskIndex < targetPosition) {
-        adjustedPosition = targetPosition - 1;
-      }
-
-      // Insert at target position
-      newTasks[targetColumnKey].splice(adjustedPosition, 0, draggedTask);
+      // Assign the correctly re-indexed target column
+      newTasks[targetColumnKey] = tasksInTargetColumn;
 
       return newTasks;
     });
