@@ -258,8 +258,12 @@ export const useBatchDragDrop = (tasks, setTasks) => {
     // Update pending count state
     setPendingUpdates(Object.keys(updateQueueRef.current).length);
 
-    // Schedule batch update
-    scheduleBatchUpdate();
+    // Schedule batch update, or flush immediately if cross-column or 'done'
+    if (sourceColumn !== targetColumnKey || targetColumnKey === "done") {
+      setTimeout(flushBatchUpdates, 0);
+    } else {
+      scheduleBatchUpdate();
+    }
 
     setDraggedTask(null);
     setSourceColumn(null);
