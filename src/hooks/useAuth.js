@@ -25,7 +25,6 @@ export const useAuth = () => {
       }
 
       setUser(data.user);
-      localStorage.setItem("token", data.token);
       router.push("/dashboard");
       return data.user;
     } catch (err) {
@@ -54,7 +53,6 @@ export const useAuth = () => {
       }
 
       setUser(data.user);
-      localStorage.setItem("token", data.token);
       router.push("/dashboard");
       return data.user;
     } catch (err) {
@@ -79,7 +77,6 @@ export const useAuth = () => {
       }
 
       setUser(null);
-      localStorage.removeItem("token");
       router.push("/");
     } catch (err) {
       setError(err.message);
@@ -93,6 +90,20 @@ export const useAuth = () => {
     setError(msg);
   };
 
+  const checkAuth = async () => {
+    try {
+      const response = await fetch("/api/me");
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      return false;
+    }
+  };
+
   return {
     user,
     loading,
@@ -100,6 +111,7 @@ export const useAuth = () => {
     register,
     login,
     logout,
+    checkAuth,
     addError,
   };
 };

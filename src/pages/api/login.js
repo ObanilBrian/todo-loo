@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     // Set cookie
     res.setHeader(
       "Set-Cookie",
-      `token=${token}; Path=/; HttpOnly; Max-Age=${7 * 24 * 60 * 60}`
+      `token=${token}; Path=/; HttpOnly; Secure=${process.env.NODE_ENV === "production"}; SameSite=Strict; Max-Age=${7 * 24 * 60 * 60}`
     );
 
     res.status(200).json({
@@ -48,7 +48,6 @@ export default async function handler(req, res) {
         id: user._id,
         username: user.username,
       },
-      token,
     });
   } catch (error) {
     console.error("Login error:", error);

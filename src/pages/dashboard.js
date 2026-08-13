@@ -13,7 +13,7 @@ import Head from "next/head";
 
 export default function Dashboard() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, checkAuth } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,9 +54,9 @@ export default function Dashboard() {
 
   // Authentication guard and fetch initial tasks
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
+    const init = async () => {
+      const isAuth = await checkAuth();
+      if (!isAuth) {
         router.push("/");
         return;
       }
@@ -69,8 +69,8 @@ export default function Dashboard() {
       setIsLoading(false);
     };
 
-    checkAuth();
-  }, [router, resetPagination, fetchInitialTasks]);
+    init();
+  }, [router, resetPagination, fetchInitialTasks, checkAuth]);
 
   // Cleanup batch updates on component unmount
   useEffect(() => {
