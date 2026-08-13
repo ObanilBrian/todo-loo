@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# FUSE hidden files (temporary files created by filesystem when files are edited)
+.fuse_hidden*
+
+/docs
+/scripts
