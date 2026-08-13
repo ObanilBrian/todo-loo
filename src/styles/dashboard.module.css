@@ -1,13 +1,82 @@
+.columnWrapper {
+  height: 100%;
+}
+
+.columnCard {
+  border: none;
+  border-radius: 12px;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 0.5rem;
+}
+
+.columnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: transparent !important;
+  color: #111827 !important;
+  border-bottom: none;
+}
+
+.columnTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.columnTitle::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.columnBacklog .columnTitle::before { background-color: #6B7280; }
+.columnTodo .columnTitle::before { background-color: #3B82F6; }
+.columnInProgress .columnTitle::before { background-color: #F59E0B; }
+.columnDone .columnTitle::before { background-color: #10B981; }
+
 .columnBody {
   min-height: 400px;
   max-height: 600px;
   overflow-y: auto;
-  background-color: #f8f9fa;
+  background-color: #F3F4F6;
+  border-radius: 12px;
+  padding: 1rem;
   transition: background-color 0.2s ease;
+  flex: 1;
 }
 
 .columnBody:hover {
-  background-color: #e9ecef;
+  background-color: #E5E7EB;
+}
+
+.addBtn {
+  background: none;
+  border: none;
+  color: #6B7280;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.addBtn:hover {
+  background-color: #E5E7EB;
+  color: #111827;
 }
 
 /* Modal Styles */
@@ -17,87 +86,84 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(17, 24, 39, 0.4);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-in-out;
+  animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  max-width: 500px;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 480px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  animation: slideUp 0.3s ease-in-out;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid #F3F4F6;
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+  border-bottom: 1px solid #F3F4F6;
 }
 
 .modalHeader h5 {
   margin: 0;
   font-weight: 600;
-  color: #212529;
+  color: #111827;
+  font-size: 1.125rem;
 }
 
 .closeBtn {
   background: none;
   border: none;
-  font-size: 28px;
-  color: #6c757d;
+  font-size: 24px;
+  color: #9CA3AF;
   cursor: pointer;
   padding: 0;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .closeBtn:hover {
-  color: #212529;
+  background-color: #F3F4F6;
+  color: #111827;
 }
 
 .modalBody {
-  padding: 20px;
+  padding: 1.5rem;
 }
 
 .modalFooter {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  padding: 20px;
-  border-top: 1px solid #e9ecef;
-  background-color: #f8f9fa;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #F9FAFB;
+  border-top: 1px solid #F3F4F6;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
 }

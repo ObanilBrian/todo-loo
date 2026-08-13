@@ -95,21 +95,31 @@ export default function Dashboard() {
 
 
   return (
-    <div className="container-fluid p-4">
-      <div className="mb-4 d-flex justify-content-between align-items-center">
-        <h1 className="mb-0">ToDo-Loo! 📋</h1>
+    <div className="container-fluid px-4 py-5" style={{ maxWidth: '1600px', margin: '0 auto' }}>
+      <div className="mb-5 d-flex justify-content-between align-items-center">
         <div>
+          <h1 className="mb-1" style={{ fontWeight: 700, letterSpacing: '-0.04em', fontSize: '2rem' }}>
+            ToDo-Loo! <span style={{fontSize: '0.85em'}}>📋</span>
+          </h1>
+          <p className="text-muted mb-0" style={{ fontSize: '0.9rem' }}>Manage your tasks effectively.</p>
+        </div>
+        <div className="d-flex gap-2">
           <button
-            className="btn btn-primary mx-2"
+            className="btn btn-primary d-flex align-items-center gap-2"
             onClick={() => cardManagement.handleOpenModal("backlog")}
             title="Add a new card"
+            style={{ padding: '0.6rem 1.25rem' }}
           >
-            + <span className="d-none d-lg-inline-block">Add Card</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+            <span className="d-none d-lg-inline-block">Add Task</span>
           </button>
           <button
             className="btn btn-outline-secondary"
             onClick={logout}
             title="Logout"
+            style={{ padding: '0.6rem 1.25rem' }}
           >
             Logout
           </button>
@@ -117,7 +127,7 @@ export default function Dashboard() {
       </div>
 
       {paginationError && (
-        <div className="alert alert-warning alert-dismissible fade show">
+        <div className="alert alert-warning alert-dismissible fade show" style={{ borderRadius: '12px' }}>
           Failed to load tasks: {paginationError}
         </div>
       )}

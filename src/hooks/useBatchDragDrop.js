@@ -206,10 +206,10 @@ export const useBatchDragDrop = (tasks, setTasks) => {
     // Integer re-indexing approach: re-index all tasks in the column
     // to guarantee consistent integer gaps and prevent precision loss
     tasksInTargetColumn.forEach((task, index) => {
-      const newPos = (index + 1) * 1024;
+      const newPosition = (index + 1) * 1024;
       
       // Update local task position
-      task.position = newPos;
+      task.position = newPosition;
       
       // Queue update for any task whose position changed
       updateQueueRef.current[task._id] = {
@@ -217,7 +217,7 @@ export const useBatchDragDrop = (tasks, setTasks) => {
         title: task.title,
         description: task.description,
         column: targetColumnKey,
-        position: newPos,
+        position: newPosition,
       };
     });
 

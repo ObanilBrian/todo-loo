@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bs-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bs-body-bg: #F9FAFB;
+  --bs-body-color: #111827;
+  
+  --bs-primary: #000000;
+  --bs-primary-rgb: 0, 0, 0;
+  
+  --bs-secondary: #6B7280;
+  --bs-secondary-rgb: 107, 114, 128;
+
+  --bs-info: #3B82F6;
+  --bs-info-rgb: 59, 130, 246;
+
+  --bs-warning: #F59E0B;
+  --bs-warning-rgb: 245, 158, 11;
+
+  --bs-success: #10B981;
+  --bs-success-rgb: 16, 185, 129;
+
+  --bs-danger: #EF4444;
+  
+  --bs-border-radius: 12px;
+  --bs-border-radius-sm: 8px;
+  --bs-border-radius-lg: 16px;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  
+  --transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: var(--bs-body-font-family);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Customizing Bootstrap Buttons to be more modern */
+.btn {
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: var(--transition-all);
+  border: none;
+}
+
+.btn-primary {
+  background-color: #111827;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #374151;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+  border: 1px solid #E5E7EB;
+  color: #4B5563;
+  background-color: white;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #F3F4F6;
+  color: #111827;
+  border-color: #D1D5DB;
+}
+
+/* Customizing Bootstrap Forms to be more modern */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid #D1D5DB;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  transition: var(--transition-all);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.form-label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+}
