@@ -73,7 +73,7 @@ export const useCardManagement = () => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/task?taskId=${taskId}`, {
+      const response = await fetch(`/api/task/${taskId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -127,14 +127,13 @@ export const useCardManagement = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/task", {
+      const response = await fetch(`/api/task/${editMode.taskId}`, {
         method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          taskId: editMode.taskId,
           title: formData.title,
           description: formData.description,
           column: editMode.columnKey,
